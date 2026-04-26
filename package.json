@@ -1,6 +1,6 @@
 {
   "name": "cc-quota-bar",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Claude Code statusline with official subscription quota progress bar (5h / 7d windows). Cross-platform (Linux / macOS).",
   "keywords": [
     "claude",
