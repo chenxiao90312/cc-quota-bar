@@ -1,6 +1,6 @@
 {
   "name": "cc-quota-bar",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Claude Code statusline with official subscription quota progress bar (5h / 7d windows). Cross-platform (Linux / macOS).",
   "keywords": [
     "claude",
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/chenxiao90312/cc-quota-bar#readme",
   "type": "module",
   "bin": {
+    "cc-quota-bar": "./bin/setup.mjs",
     "claude-status-bar": "./bin/statusline.mjs",
     "claude-status-bar-setup": "./bin/setup.mjs",
     "claude-quota": "./bin/quota.mjs"
@@ -40,6 +41,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "test:render": "echo '{\"session_id\":\"smoke\",\"model\":{\"id\":\"claude-opus-4-7\",\"display_name\":\"opus-4-7\"},\"workspace\":{\"current_dir\":\".\"},\"context_window\":{\"used_percentage\":0,\"current_usage\":{\"input_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":0}},\"total_input_tokens\":0,\"total_output_tokens\":0}}' | node ./bin/statusline.mjs"
+    "test:render": "echo '{\"session_id\":\"smoke\",\"model\":{\"id\":\"claude-opus-4-7\",\"display_name\":\"opus-4-7\"},\"workspace\":{\"current_dir\":\".\"},\"context_window\":{\"used_percentage\":0,\"current_usage\":{\"input_tokens\":0,\"cache_read_input_tokens\":0,\"cache_creation_input_tokens\":0,\"cache_creation\":{\"ephemeral_5m_input_tokens\":0,\"ephemeral_1h_input_tokens\":0}},\"total_input_tokens\":0,\"total_output_tokens\":0}}' | node ./bin/statusline.mjs",
+    "postinstall": "node ./bin/postinstall.mjs"
   }
 }

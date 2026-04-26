@@ -28,27 +28,38 @@ Ctx: 88k(45%)   | Session: 98k in:85k/88k(96%) out:10k cacheW:2k
 
 ## 安装
 
+**一条命令搞定**：
+
 ```bash
-# 方式一：从 npm 安装
-npm install -g cc-quota-bar
-
-# 方式二：从源码安装（克隆仓库后）
-cd cc-quota-bar
-npm install -g .
-
-# 一键写入 ~/.claude/settings.json
-claude-status-bar-setup
+npx cc-quota-bar
 ```
 
-setup 会做：
+背后做四件事：
 1. 检查 Node ≥ 18
-2. 备份现有 `~/.claude/settings.json`（如有）
-3. 写入 `statusLine.command` 指向 `bin/statusline.mjs`（解 symlink 后的真实绝对路径）
+2. 把代码复制到 `~/.local/share/cc-quota-bar/`（XDG 标准稳定路径，与 npm cache 解耦，避免 cache GC 后 statusline 找不到入口）
+3. 备份现有 `~/.claude/settings.json`（如有），写入 `statusLine.command` 指向稳定路径里的 `bin/statusline.mjs`
 4. 跑一次烟雾测试，打印渲染结果
 
-下次 Claude Code statusline 刷新即生效（不用重启 session，statusLine 是每次刷新时调用）。
+下次 Claude Code statusline 刷新即生效（不用重启 session，statusLine 每次刷新都重新执行）。
 
-升级后只需重跑 `npm install -g cc-quota-bar`（或源码方式 `npm install -g .`），bin 是 symlink，自动指向新代码，无需再跑 setup。
+### 升级
+
+```bash
+npx cc-quota-bar       # 同一条命令，会用 npm 上的最新版覆盖稳定路径里的旧代码
+```
+
+`~/.claude/settings.json` 里的绝对路径不变，无需再次设置。
+
+### 备选（不推荐）：全局安装
+
+如果你坚持全局安装：
+
+```bash
+npm install -g cc-quota-bar    # 装包到全局 PATH
+cc-quota-bar                    # 一次性 setup（仍会复制到稳定路径）
+```
+
+全局安装的副作用是占着 `claude-status-bar` / `claude-quota` 等命令名（PATH 污染）；npx 模式只占稳定目录，不污染 PATH。npm 全局安装的优势是 `claude-quota --status` 等调试命令直接可用，npx 模式调试要写完整路径。
 
 ## 工作机制
 
@@ -77,9 +88,17 @@ claude-quota --refresh    # 强制刷新一次（同步等结果）
 setup 留下的 `~/.claude/settings.json.bak.<时间戳>` 可以直接覆盖回去：
 
 ```bash
+# 1. 恢复 settings.json（时间戳替换成你那个）
 mv ~/.claude/settings.json.bak.YYYY-MM-DDTHH-MM-SS-mmmZ ~/.claude/settings.json
-npm uninstall -g cc-quota-bar
+
+# 2. 删除稳定路径下的代码副本
+rm -rf ~/.local/share/cc-quota-bar
+
+# 3. 清缓存（可选）
 rm -rf ~/.cache/claude-quota ~/.cache/claude-statusline
+
+# 4. 如果走过 npm install -g 路径，再跑一句卸载
+npm uninstall -g cc-quota-bar
 ```
 
 ## 致谢
