@@ -31,6 +31,12 @@ Progress-bar color thresholds (by utilization): **< 60% green, 60–80% yellow, 
 
 The 2×2 layout is optimized for half-screen terminals: left column is `Model / Ctx`, right column is `Usage|Cost / Session`, with the `|` separator auto-aligned across rows.
 
+### Cost pricing (API Billing mode)
+
+Cost is computed only for **Anthropic official models** (`lib/pricing.json`, hand-maintained from `platform.claude.com/docs/.../pricing`, preserves the 5-minute / 1-hour cache-write distinction). ID matching tolerates case, the `~` prefix, `-YYYYMMDD` date suffixes, `.` ↔ `-` version separators, and `anthropic/` vendor prefixes — so `claude-opus-4-7`, `claude-opus-4-7-20251029`, `claude-opus-4.7`, and `anthropic/claude-opus-4.7` all resolve to the same entry.
+
+Other vendors (OpenRouter, Aliyun BaiLian, Z.ai, MiniMax, Ollama, etc.) are **not supported**: each gateway charges its own rate that no third-party table reflects accurately, and pretending to compute a number from one would mislead more than help. When a non-Anthropic model is the only one in the session, the right column shows `Cost: -- (not supported)`. In a mixed session, recognized contributions are summed and the line is annotated `(partial)`.
+
 ## Install
 
 **One command does everything:**

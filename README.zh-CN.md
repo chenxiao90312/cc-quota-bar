@@ -31,6 +31,12 @@ Ctx: 88k(45%)   | Session: 98k in:85k/88k(96%) out:10k cacheW:2k
 
 布局采用 2×2，便于半屏 terminal 阅读：左列 `Model / Ctx`，右列 `Usage|Cost / Session`，`|` 自动对齐。
 
+### Cost 计价（API Billing 模式）
+
+Cost 仅覆盖 **Anthropic 官方模型**，价格表 `lib/pricing.json` 手工维护，源自 `platform.claude.com/docs/.../pricing`（保留 5 分钟 / 1 小时 cache write 区分）。ID 匹配容错：忽略大小写、`~` 前缀、`-YYYYMMDD` 日期后缀、`.` ↔ `-` 版本号互换、`anthropic/` vendor 前缀——所以 `claude-opus-4-7`、`claude-opus-4-7-20251029`、`claude-opus-4.7`、`anthropic/claude-opus-4.7` 都映射到同一条价目。
+
+其他厂商（OpenRouter、阿里云百炼、Z.ai、MiniMax、Ollama 等）一律 **不支持**：每个中转的真实计费跟任何第三方报价表都不一致，硬算一个数字反而误导。session 里全是非 Anthropic 模型时，右栏显示 `Cost: -- (not supported)`；混合 session 中已知部分被求和，并附 `(partial)` 标注。
+
 ## 安装
 
 **一条命令搞定**：
