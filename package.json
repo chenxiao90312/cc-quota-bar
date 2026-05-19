@@ -1,6 +1,6 @@
 {
   "name": "cc-quota-bar",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Claude Code statusline with official subscription quota progress bar (5h / 7d windows) and Anthropic API-billing cost. Cross-platform (Linux / macOS).",
   "keywords": [
     "claude",

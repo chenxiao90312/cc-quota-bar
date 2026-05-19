@@ -2,6 +2,20 @@
 
 All notable changes to `cc-quota-bar`.
 
+## 0.3.2 - 2026-05-19
+
+### Fixed
+- **Session token counts are finally correct.** Verified against `transcript.jsonl` ground truth — every column (`out:`, `in:`, `cacheW`, total) now matches byte-for-byte. Prior versions silently undercounted by 50-100×.
+- Root cause: the original implementation accumulated session totals by computing deltas of `data.context_window.total_output_tokens` between renders. That field is not a session-cumulative counter — it behaves like a per-turn snapshot, so the `totalOut > snapshot` branch rarely fired and `cumOutput` stayed near zero for entire multi-hour sessions. `cumCacheRead` had the same problem disguised by cache reads being large numbers by nature, so the column looked plausible while being off by ~50×. Bug was present since 0.1.0.
+
+### Changed
+- **State schema bumped to v2.** Token accumulation is now driven entirely by scanning `transcript.jsonl` and the `subagents/agent-*.jsonl` files (`type:assistant` → `message.usage` per model). `data.context_window` is only used for the **Ctx** column (its actual purpose). On upgrade, old state files (no `schemaVersion` or `< 2`) are discarded and rebuilt from byte 0 of the transcript — a one-time ~50ms full scan, after which renders are incremental and effectively free.
+- `byModel` is now the single source of truth; `cumUncached` / `cumCacheRead` / `cumCacheCreate` / `cumOutput` are derived per render. Self-heal block removed (sum-vs-cum drift is now impossible).
+- `Ctx:` column now shows only `current_usage` totals + `used_percentage` — no longer entangled with session-cumulative state.
+
+### Removed
+- `state.snapshot`, `state.cumUncached`, `state.cumCacheRead`, `state.cumCacheCreate`, `state.cumOutput`, the v0.2.x → v0.3.x legacy `byModel` key remap, and the dominant-model self-heal block.
+
 ## 0.3.1 - 2026-04-29
 
 ### Added
