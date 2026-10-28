@@ -2,6 +2,14 @@
 
 All notable changes to `cc-quota-bar`.
 
+## 0.4.0 - 2026-10-28
+
+### Added
+- **Zhipu BigModel (China) subscription quota support.** When Claude Code runs against the ZCode endpoint (`ANTHROPIC_BASE_URL` → `*.bigmodel.cn`, e.g. BigModel Coding Plan), the Usage column shows the real 5-hour / weekly subscription limits as the same dual progress bars as Claude subscriptions. Token: `ANTHROPIC_API_KEY` (priority) or `ANTHROPIC_AUTH_TOKEN` as Bearer. API: `GET https://bigmodel.cn/api/monitor/usage/quota/limit` (`Bigmodel-Target-Type: PERSONAL`); `TOKENS_LIMIT` with `unit===6` maps to the weekly window, other `TOKENS_LIMIT` entries to 5h; response normalized to the Claude-quota payload shape (epoch-ms `nextResetTime` → ISO `resets_at`). Separate cache `~/.cache/claude-quota/zhipu-cache.json` (60s TTL) and lock `zhipu-lock.d/`.
+
+### Fixed
+- Mode routing: a ZCode env sets `ANTHROPIC_AUTH_TOKEN`, which was misdetected as API Billing mode — the right column showed `Cost: -- (not supported)` for subscription users. Zhipu endpoint detection now takes precedence over the API-billing check.
+
 ## 0.3.2 - 2026-05-19
 
 ### Fixed

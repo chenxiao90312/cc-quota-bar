@@ -7,6 +7,8 @@
 
 Claude Code statusline，**订阅模式**下右栏用进度条展示官方 5 小时 / 7 天限速窗口；**API Billing 模式**（环境变量含 `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN`）下右栏自动切回 token 累计成本。
 
+**支持智谱 BigModel Coding Plan（国内）**：`ANTHROPIC_BASE_URL` 指向 `*.bigmodel.cn`（ZCode 端点）时，同样的 5h / 周双进度条自动切换为展示 BigModel 订阅限额。
+
 跨平台：Linux / macOS（macOS 优先读 Keychain，自动回退到 `~/.claude/.credentials.json`）。
 
 ## 渲染示例
@@ -16,6 +18,14 @@ Claude Code statusline，**订阅模式**下右栏用进度条展示官方 5 小
 ```
 chenxiao@host /path/to/repo (main)
 Model: opus-4-7 | Usage: 5h █░░░░░░░  18% 4.7h  7d ░░░░░░░░  12% 1.7h
+Ctx: 88k(45%)   | Session: 98k in:85k/88k(96%) out:10k cacheW:2k
+```
+
+智谱 BigModel 模式（`ANTHROPIC_BASE_URL` → `*.bigmodel.cn`，如 Coding Plan / ZCode）——同款进度条，展示 BigModel 限额：
+
+```
+chenxiao@host /path/to/repo (main)
+Model: GLM-5.3 | Usage: 5h █░░░░░░░   5% 3.5h  7d ░░░░░░░░   9% 4.7d
 Ctx: 88k(45%)   | Session: 98k in:85k/88k(96%) out:10k cacheW:2k
 ```
 
@@ -76,6 +86,7 @@ cc-quota-bar                    # 一次性 setup（仍会复制到稳定路径�
 
 - 凭据读取：macOS 走 `security find-generic-password -s "Claude Code-credentials"` Keychain；Linux 读 `~/.claude/.credentials.json`
 - 调用 API：`GET https://api.anthropic.com/api/oauth/usage` + `anthropic-beta: oauth-2025-04-20`（与 Claude Code 自带的 `/usage` 命令同源）
+- 智谱 BigModel：由 `ANTHROPIC_BASE_URL`（`*.bigmodel.cn`）触发；Bearer token 取 `ANTHROPIC_API_KEY`（优先）或 `ANTHROPIC_AUTH_TOKEN`；API `GET https://bigmodel.cn/api/monitor/usage/quota/limit`；响应归一化后与 Claude 订阅同构同渲染；独立缓存 `zhipu-cache.json` + 锁 `zhipu-lock.d/`（同缓存目录）
 - 缓存：`~/.cache/claude-quota/cache.json`，TTL 60 秒
 - 锁：`~/.cache/claude-quota/lock.d/`，mkdir 原子锁，孤儿锁 2 分钟自动清理
 

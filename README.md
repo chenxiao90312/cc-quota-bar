@@ -7,6 +7,8 @@
 
 A Claude Code statusline that surfaces your **official 5-hour / 7-day subscription quota** as progress bars in the right column. When you're on **API Billing mode** (`ANTHROPIC_API_KEY` or `ANTHROPIC_AUTH_TOKEN` set in your env), it automatically switches the right column to a cumulative token cost reference.
 
+**Zhipu BigModel Coding Plan (China) supported**: when `ANTHROPIC_BASE_URL` points at `*.bigmodel.cn` (ZCode endpoint), the same 5h / weekly progress bars show your BigModel subscription limits instead.
+
 Cross-platform: Linux / macOS (on macOS the OAuth token is read from Keychain first, falling back to `~/.claude/.credentials.json`).
 
 ## Render examples
@@ -16,6 +18,14 @@ Subscription mode (default):
 ```
 chenxiao@host /path/to/repo (main)
 Model: opus-4-7 | Usage: 5h █░░░░░░░  18% 4.7h  7d ░░░░░░░░  12% 1.7h
+Ctx: 88k(45%)   | Session: 98k in:85k/88k(96%) out:10k cacheW:2k
+```
+
+Zhipu BigModel mode (`ANTHROPIC_BASE_URL` → `*.bigmodel.cn`, e.g. Coding Plan / ZCode) — same bars, BigModel limits:
+
+```
+chenxiao@host /path/to/repo (main)
+Model: GLM-5.3 | Usage: 5h █░░░░░░░   5% 3.5h  7d ░░░░░░░░   9% 4.7d
 Ctx: 88k(45%)   | Session: 98k in:85k/88k(96%) out:10k cacheW:2k
 ```
 
@@ -76,6 +86,7 @@ Global install pollutes `$PATH` with `claude-status-bar` / `claude-quota` / etc.
 
 - **Credentials**: macOS reads from Keychain (`security find-generic-password -s "Claude Code-credentials"`); Linux reads `~/.claude/.credentials.json`
 - **API**: `GET https://api.anthropic.com/api/oauth/usage` with header `anthropic-beta: oauth-2025-04-20` — same endpoint as Claude Code's built-in `/usage` slash command
+- **Zhipu BigModel**: detected via `ANTHROPIC_BASE_URL` (`*.bigmodel.cn`); Bearer token from `ANTHROPIC_API_KEY` (priority) or `ANTHROPIC_AUTH_TOKEN`; API `GET https://bigmodel.cn/api/monitor/usage/quota/limit`; response normalized to the same payload and rendered identically to Claude subscriptions; separate cache `zhipu-cache.json` + lock `zhipu-lock.d/` in the same cache dir
 - **Cache**: `~/.cache/claude-quota/cache.json`, 60-second TTL
 - **Lock**: `~/.cache/claude-quota/lock.d/`, atomic `mkdir`-based, orphan locks self-clear after 2 minutes
 
